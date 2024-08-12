@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import {
 	BadRequestException,
 	Injectable,
@@ -6,11 +7,17 @@ import {
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from 'src/prisma.service'
 import { ChangeUserRoleDto } from './dto/change-role.dto'
+import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 
 @Injectable()
 export class UsersService {
 	constructor(private readonly prismaService: PrismaService) {}
+
+	private async hashPassword(password: string, salt: number) {
+		const hashedPassword = await bcrypt.hash(password, salt)
+		return hashedPassword
+	}
 
 	async getUserById(userId: number) {
 		const user = await this.prismaService.user.findFirst({
@@ -38,6 +45,26 @@ export class UsersService {
 		})
 
 		if (!user) throw new NotFoundException('User not found!')
+
+		return user
+	}
+
+	async create(dto: CreateUserDto) {
+		const existUser = await this.getUserByEmail(dto.email)
+
+		if (existUser)
+			throw new BadRequestException('User with this email already exists!')
+
+		const hashedPassword = await this.hashPassword(dto.password, 10)
+
+		const user = await this.prismaService.user.create({
+			data: {
+				email: dto.email,
+				password: hashedPassword,
+				firstName: faker.person.firstName(),
+				lastName: faker.person.lastName()
+			}
+		})
 
 		return user
 	}
