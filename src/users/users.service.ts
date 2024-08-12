@@ -13,20 +13,27 @@ export class UsersService {
 	constructor(private readonly prismaService: PrismaService) {}
 
 	async getUserById(userId: number) {
-		const user = await this.prismaService.user.findUnique({
+		const user = await this.prismaService.user.findFirst({
 			where: {
 				id: userId
 			},
-			select: {
-				id: true,
-				firstName: true,
-				lastName: true,
-				phone: true,
-				address: true,
-				password: false,
-				avatarPath: true,
-				role: true,
-				email: true
+			omit: {
+				password: true
+			}
+		})
+
+		if (!user) throw new NotFoundException('User not found!')
+
+		return user
+	}
+
+	async getUserByEmail(email: string) {
+		const user = await this.prismaService.user.findFirst({
+			where: {
+				email
+			},
+			omit: {
+				password: true
 			}
 		})
 
@@ -69,6 +76,8 @@ export class UsersService {
 			}
 		})
 	}
+
+	// Admin endpoints
 
 	async getAllUsers() {
 		return await this.prismaService.user.findMany({

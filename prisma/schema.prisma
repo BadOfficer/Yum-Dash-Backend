@@ -21,9 +21,13 @@ model User {
   address String @default("")
 
   role Role @default(USER)
-  avatarPath String @map("avatar_path") @default("")
+  avatarPath String @map("avatar_path") @default("/uploads/default-user.png")
+
+  reviews Review[]
 
   orders Order[]
+
+  @@map("user")
 }
 
 model Category {
@@ -33,7 +37,9 @@ model Category {
 
   title String @unique
 
-  CategoriesOnProducts CategoriesOnProducts[]
+  categoriesOnProducts CategoriesOnProducts[]
+
+  @@map("category")
 }
 
 model Product {
@@ -44,9 +50,27 @@ model Product {
   title String
   image String
   price Float
-  orderItems OrderItem[]
+  description String
 
-  CategoriesOnProducts CategoriesOnProducts[]
+  orderItems OrderItem[]
+  reviews Review[]
+
+  categoriesOnProducts CategoriesOnProducts[]
+
+  ingradients Ingradient[]
+
+  @@map("product")
+}
+
+model Ingradient {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String
+
+  product Product? @relation(fields: [productId], references: [id])
+  productId Int? @map("product_id")
 }
 
 model Order {
@@ -59,6 +83,8 @@ model Order {
 
   user User? @relation(fields: [userId], references: [id])
   userId Int? @map("user_id")
+
+  @@map("order")
 }
 
 model OrderItem {
@@ -74,6 +100,8 @@ model OrderItem {
 
   product Product? @relation(fields: [productId], references: [id])
   productId Int? @map("product_id")
+
+  @@map("order_item")
 }
 
 model CategoriesOnProducts {
@@ -84,6 +112,21 @@ model CategoriesOnProducts {
   categoryId Int @map("category_id")
 
   @@id([productId, categoryId])
+}
+
+model Review {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  text String
+  rating Int
+
+  user User? @relation(fields: [userId], references: [id])
+  userId Int? @map("user_id")
+
+  product Product? @relation(fields: [productId], references: [id])
+  productId Int? @map("product_id")
 }
 
 enum OrderStatus {
