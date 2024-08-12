@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker'
 import {
 	BadRequestException,
 	Injectable,
@@ -50,7 +49,11 @@ export class UsersService {
 	}
 
 	async create(dto: CreateUserDto) {
-		const existUser = await this.getUserByEmail(dto.email)
+		const existUser = await this.prismaService.user.findUnique({
+			where: {
+				email: dto.email
+			}
+		})
 
 		if (existUser)
 			throw new BadRequestException('User with this email already exists!')
@@ -61,8 +64,11 @@ export class UsersService {
 			data: {
 				email: dto.email,
 				password: hashedPassword,
-				firstName: faker.person.firstName(),
-				lastName: faker.person.lastName()
+				firstName: dto.firstName,
+				lastName: dto.lastName
+			},
+			omit: {
+				password: true
 			}
 		})
 

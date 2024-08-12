@@ -71,6 +71,8 @@ model Ingradient {
 
   product Product? @relation(fields: [productId], references: [id])
   productId Int? @map("product_id")
+
+  @@map("ingradient")
 }
 
 model Order {
@@ -112,6 +114,7 @@ model CategoriesOnProducts {
   categoryId Int @map("category_id")
 
   @@id([productId, categoryId])
+  @@map("categories_products")
 }
 
 model Review {
@@ -127,6 +130,8 @@ model Review {
 
   product Product? @relation(fields: [productId], references: [id])
   productId Int? @map("product_id")
+
+  @@map("review")
 }
 
 enum OrderStatus {
