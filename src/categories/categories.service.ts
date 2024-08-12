@@ -52,19 +52,23 @@ export class CategoriesService {
 
 	async getAllCategories(
 		searchOption: string = '',
-		offset: number,
-		count: number
+		offset: number = 1,
+		count: number = 10
 	) {
-		const validOffset = isNaN(offset) ? 0 : offset
+		const validOffset = isNaN(offset) ? 1 : offset
 		const validCount = isNaN(count) ? 10 : count
 
 		return await this.prismaService.category.findMany({
+			orderBy: {
+				createdAt: 'desc'
+			},
 			where: {
 				title: {
-					contains: searchOption
+					contains: searchOption,
+					mode: 'insensitive'
 				}
 			},
-			skip: validCount * validOffset,
+			skip: validCount * (validOffset - 1),
 			take: validCount
 		})
 	}

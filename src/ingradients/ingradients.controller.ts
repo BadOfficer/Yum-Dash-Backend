@@ -13,34 +13,34 @@ import {
 } from '@nestjs/common'
 import { Role } from '@prisma/client'
 import { Auth } from 'src/auth/decorators/auth.decorator'
-import { CategoriesService } from './categories.service'
-import { CategoryDto } from './dto/category.dto'
+import { IngradientDto } from './dto/ingradient.dto'
+import { IngradientsService } from './ingradients.service'
 
-@Controller('categories')
-export class CategoriesController {
-	constructor(private readonly categoriesService: CategoriesService) {}
+@Controller('ingradients')
+export class IngradientsController {
+	constructor(private readonly ingradientsService: IngradientsService) {}
 
 	@Post()
 	@HttpCode(200)
 	@Auth(Role.ADMIN)
 	@UsePipes(new ValidationPipe())
-	async create(@Body() dto: CategoryDto) {
-		return await this.categoriesService.createCategory(dto)
+	async create(@Body() dto: IngradientDto) {
+		return await this.ingradientsService.createIngradient(dto)
 	}
 
 	@Put()
 	@HttpCode(200)
 	@Auth(Role.ADMIN)
 	@UsePipes(new ValidationPipe())
-	async update(@Body() dto: CategoryDto) {
-		return await this.categoriesService.updateCategory(dto)
+	async update(@Body() dto: IngradientDto) {
+		return await this.ingradientsService.updateIngradient(dto)
 	}
 
 	@Delete(':id')
 	@Auth(Role.ADMIN)
 	@UsePipes(new ValidationPipe())
 	async delete(@Param('id') id: string) {
-		return await this.categoriesService.deleteCategory(+id)
+		return await this.ingradientsService.deleteIngradient(+id)
 	}
 
 	@Auth(Role.ADMIN)
@@ -50,7 +50,7 @@ export class CategoriesController {
 		@Query('offset') offset?: string,
 		@Query('count') count?: string
 	) {
-		return await this.categoriesService.getAllCategories(
+		return await this.ingradientsService.getAllIngradients(
 			searchOption,
 			+offset,
 			+count
