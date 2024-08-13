@@ -5,6 +5,7 @@ import { IngradientsService } from './ingradients.service'
 
 @Module({
 	controllers: [IngradientsController],
-	providers: [IngradientsService, PrismaService]
+	providers: [IngradientsService, PrismaService],
+	exports: [IngradientsService]
 })
 export class IngradientsModule {}

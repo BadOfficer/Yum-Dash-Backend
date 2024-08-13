@@ -55,7 +55,11 @@ export class IngradientsService {
 	}
 
 	async createIngradient(dto: IngradientDto) {
-		const existIngradient = await this.getIngradientByName(dto.name)
+		const existIngradient = await this.prismaService.ingradient.findUnique({
+			where: {
+				name: dto.name
+			}
+		})
 
 		if (existIngradient) throw new BadRequestException('Ingradient is exist!')
 

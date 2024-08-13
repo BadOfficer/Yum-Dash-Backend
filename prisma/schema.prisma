@@ -37,7 +37,7 @@ model Category {
 
   title String @unique
 
-  categoriesOnProducts CategoriesOnProducts[]
+  products Product[]
 
   @@map("category")
 }
@@ -55,9 +55,10 @@ model Product {
   orderItems OrderItem[]
   reviews Review[]
 
-  categoriesOnProducts CategoriesOnProducts[]
+  category Category @relation(fields: [categoryId], references: [id])
+  categoryId Int @map("category_id")
 
-  ingradients Ingradient[]
+  ingradients IngradientsOnProducts[]
 
   @@map("product")
 }
@@ -69,8 +70,7 @@ model Ingradient {
 
   name String @unique
 
-  product Product? @relation(fields: [productId], references: [id])
-  productId Int? @map("product_id")
+  products IngradientsOnProducts[]
 
   @@map("ingradient")
 }
@@ -106,15 +106,15 @@ model OrderItem {
   @@map("order_item")
 }
 
-model CategoriesOnProducts {
+model IngradientsOnProducts {
   product Product @relation(fields: [productId], references: [id])
   productId Int @map("product_id")
 
-  category Category @relation(fields: [categoryId], references: [id])
-  categoryId Int @map("category_id")
+  ingradient Ingradient @relation(fields: [ingradientId], references: [id])
+  ingradientId Int @map("ingradient_id")
 
-  @@id([productId, categoryId])
-  @@map("categories_products")
+  @@id([productId, ingradientId])
+  @@map("ingradients_products")
 }
 
 model Review {
