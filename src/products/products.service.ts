@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
+import { generateSlug } from '../utils/generate-slug'
 import { ProductDto } from './dto/product.dto'
 import { returnProductObject } from './return-product.object'
 
@@ -76,6 +77,19 @@ export class ProductsService {
 		return products
 	}
 
+	async getProductBySlug(slug: string) {
+		const product = await this.prismaService.product.findFirst({
+			where: {
+				slug: slug
+			},
+			select: returnProductObject
+		})
+
+		if (!product) throw new NotFoundException('Product not found!')
+
+		return product
+	}
+
 	async createProduct(dto: ProductDto) {
 		const product = await this.prismaService.product.create({
 			data: {
@@ -83,6 +97,7 @@ export class ProductsService {
 				image: dto.image,
 				description: dto.description,
 				price: +dto.price,
+				slug: generateSlug(dto.title),
 				category: {
 					connect: {
 						id: +dto.categoryId
@@ -149,6 +164,12 @@ export class ProductsService {
 		})
 
 		if (!product) throw new NotFoundException('Product not found!')
+
+		await this.prismaService.ingradientsOnProducts.deleteMany({
+			where: {
+				productId: productId
+			}
+		})
 
 		await this.prismaService.product.delete({
 			where: {

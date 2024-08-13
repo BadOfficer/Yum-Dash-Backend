@@ -58,6 +58,11 @@ export class ProductsController {
 		return await this.productsService.getProductByCategory(+id)
 	}
 
+	@Get(':slug')
+	async getBySlug(@Param('slug') slug: string) {
+		return await this.productsService.getProductBySlug(slug)
+	}
+
 	@Get('get-all')
 	async getAll(
 		@Query('offset') offset: string = '1',

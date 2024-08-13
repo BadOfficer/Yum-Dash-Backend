@@ -51,6 +51,7 @@ model Product {
   image String
   price Float
   description String
+  slug String @default("")
 
   orderItems OrderItem[]
   reviews Review[]
